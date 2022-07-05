@@ -9,6 +9,7 @@ import type { ParsedUrlQuery } from 'querystring';
 
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
+import Head from 'next/head';
 import Header from '../../components/Header';
 import { getPrismicClient } from '../../services/prismic';
 
@@ -65,6 +66,9 @@ const Post: NextPage<PostProps> = ({ post }) => {
 
   return (
     <>
+      <Head>
+        <title>spacetraveling - {post.data.title}</title>
+      </Head>
       <Header />
       <img src={post.data.banner.url} alt="Banner" className={styles.banner} />
       <article className={styles.post}>
