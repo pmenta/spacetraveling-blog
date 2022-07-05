@@ -8,6 +8,7 @@ import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import type { ParsedUrlQuery } from 'querystring';
 
 import { useRouter } from 'next/router';
+import { useMemo } from 'react';
 import Header from '../../components/Header';
 import { getPrismicClient } from '../../services/prismic';
 
@@ -16,7 +17,6 @@ import styles from './post.module.scss';
 
 interface Post {
   first_publication_date: string | null;
-  read_time: string;
   data: {
     title: string;
     banner: {
@@ -40,6 +40,24 @@ interface IParams extends ParsedUrlQuery {
 
 const Post: NextPage<PostProps> = ({ post }) => {
   const router = useRouter();
+
+  const readTime = useMemo(() => {
+    if (router.isFallback) {
+      return 0;
+    }
+
+    let fullText = '';
+    const readWordsPerMinute = 200;
+
+    post.data.content.forEach(postContent => {
+      fullText += postContent.heading;
+      fullText += RichText.asText(postContent.body);
+    });
+
+    const time = Math.ceil(fullText.split(/\s/g).length / readWordsPerMinute);
+
+    return time;
+  }, [post, router.isFallback]);
 
   if (router.isFallback) {
     return <div>Carregando...</div>;
@@ -72,7 +90,7 @@ const Post: NextPage<PostProps> = ({ post }) => {
             </div>
             <div>
               <Image src="/clock.svg" alt="Relógio" width={20} height={20} />
-              <span>{post.read_time}4 min</span>
+              <span>{readTime} min</span>
             </div>
           </div>
         </header>
@@ -112,20 +130,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const prismic = getPrismicClient({});
   const postResponse = await prismic.getByUID('post', slug);
 
-  let contentInText = '';
-  postResponse.data.content.map(content => {
-    contentInText += content.heading + RichText.asText(content.body);
-    return contentInText;
-  });
-
-  const readTime = Math.round(
-    ((contentInText.length * 60) / 1183 / 60) * 2
-  ).toString();
-
   const post = {
     uid: postResponse.uid,
     first_publication_date: postResponse.first_publication_date,
-    read_time: readTime,
     data: {
       title: postResponse.data.title,
       banner: {
