@@ -1,1 +1,47 @@
-// TODO
+.post {
+  max-width: 700px;
+  margin: 80px auto;
+
+  header {
+    h1 {
+      font-weight: 700;
+      font-size: 48px;
+      line-height: 58px;
+    }
+  }
+
+  .postContent {
+    margin-top: 4rem;
+    line-height: 2rem;
+    font-size: 1.125rem;
+    color: var(--gray-100);
+
+    p,
+    ul {
+      margin: 1.5rem 0;
+    }
+
+    a {
+      color: var(--highlight);
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    ul {
+      padding-left: 1.5rem;
+
+      li {
+        margin: 0.5rem 0;
+      }
+    }
+  }
+}
+
+.banner {
+  width: 100vw;
+  height: 400px;
+  max-width: 100%;
+  object-fit: cover;
+}
